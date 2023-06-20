@@ -1,0 +1,27 @@
+{
+    "name": "wars",
+    "private": true,
+    "version": "0.1.0",
+    "description": "Advance wars javascript clone",
+    "scripts": {
+        "dev:client": "vite",
+        "format": "npx prettier --write ."
+    },
+    "keywords": [
+        "typescript",
+        "javascript",
+        "advance wars"
+    ],
+    "author": "Granipouss <granipouss@gmail.com>",
+    "license": "MIT",
+    "dependencies": {
+        "pixi.js": "^7.2.4",
+        "rxjs": "^7.8.1",
+        "typescript": "^5.1.3"
+    },
+    "devDependencies": {
+        "prettier": "^2.8.8",
+        "sass": "^1.63.4",
+        "vite": "^4.3.9"
+    }
+}

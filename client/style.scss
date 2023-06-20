@@ -1,0 +1,36 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+canvas {
+    margin: 1rem;
+}
+
+code {
+    font-family: monospace;
+    white-space: pre;
+    height: 15rem;
+    width: 50vw;
+    padding: 1rem;
+    overflow: auto;
+    background: #333;
+
+    .is-state {
+        color: #fff;
+    }
+
+    .is-p1 {
+        color: #f66;
+    }
+
+    .is-p2 {
+        color: #66f;
+    }
+}
