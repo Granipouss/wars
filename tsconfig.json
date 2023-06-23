@@ -3,6 +3,7 @@
         "lib": ["es2020", "dom"],
         "target": "es2020",
         "skipLibCheck": true,
+        "allowJs": true,
         "module": "CommonJS",
         "moduleResolution": "node",
         "strict": true,

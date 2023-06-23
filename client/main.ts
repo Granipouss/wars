@@ -1,18 +1,13 @@
-import { Game, GameSide, IGame } from '../engine';
+import { ReplaySubject } from 'rxjs';
+import * as Colyseus from 'colyseus.js';
+import { Game, GameEvent, GameSide } from '../engine';
 import { data as mapData } from '../maps/hip';
 import { Application } from './graphics/app';
 import { RandomController } from './random.controller';
 
 import './style.scss';
 
-const game = new Game({
-    map: mapData,
-    armies: [
-        { color: 'red', co: 'Andy' },
-        { color: 'green', co: 'Eagle' },
-    ],
-});
-const events = game.events;
+const USE_SERVER = true;
 
 const logElement = document.querySelector('#logs')!;
 const addLog = (payload: any, type: string) => {
@@ -22,37 +17,66 @@ const addLog = (payload: any, type: string) => {
     logElement.append(line, '\n');
 };
 
-events.subscribe((event) => {
-    // console.log(event);
-    addLog(event, 'state');
-});
+if (USE_SERVER) {
+    const client = new Colyseus.Client('ws://localhost:2567');
+    client.joinOrCreate('game').then((room) => {
+        const events = new ReplaySubject<GameEvent>(1);
+        room.onMessage('game:event', (event) => {
+            addLog(event, 'state');
+            events.next(event);
+        });
 
-const makeHandler = (slot: number, game: Game): IGame => {
-    const side = new GameSide(slot, game);
+        room.onMessage('set:slot', (slot) => {
+            const controller = new RandomController(slot, {
+                events: events.asObservable(),
 
-    const app = new Application(slot, side);
-    document.querySelector('#app')!.appendChild(app.view);
+                act: (action) => {
+                    room.send('game:action', action);
+                },
+            });
+            controller.start();
 
-    app.run();
+            const app = new Application(slot, controller.game);
+            document.querySelector('#app')!.appendChild(app.view);
 
-    return {
-        events: side.events,
-        act(action) {
-            try {
-                addLog(action, `p${slot + 1}`);
-                side.act(action);
-            } catch (e) {
-                console.error(`p${slot + 1}`, e);
-                debugger;
-            }
-        },
-    };
-};
+            app.run();
+        });
+    });
+} else {
+    const game = new Game({
+        map: mapData,
+        armies: [
+            { color: 'red', co: 'Andy' },
+            { color: 'green', co: 'Eagle' },
+        ],
+    });
 
-const p1 = new RandomController(0, makeHandler(0, game));
-const p2 = new RandomController(1, makeHandler(1, game));
+    game.events.subscribe((event) => {
+        // console.log(event);
+        addLog(event, 'state');
+    });
 
-p1.start();
-p2.start();
+    for (let slot = 0; slot < 2; slot++) {
+        const side = new GameSide(slot, game);
 
-game.start();
+        const controller = new RandomController(slot, {
+            events: side.events,
+            act(action) {
+                try {
+                    addLog(action, `p${slot + 1}`);
+                    side.act(action);
+                } catch (e) {
+                    console.error(`p${slot + 1}`, e);
+                    debugger;
+                }
+            },
+        });
+        controller.start();
+
+        const app = new Application(slot, side);
+        document.querySelector('#app')!.appendChild(app.view);
+        app.run();
+    }
+
+    game.start();
+}

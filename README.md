@@ -23,6 +23,7 @@ The Project is split into 3 main parts
 
 -   [RxJS](https://rxjs.dev/) is used for event and stream like behaviours
 -   [Pixi](https://pixijs.com/) is used for 2d graphics
+-   [Colyseus](https://github.com/colyseus/colyseus) is used for server-client communication
 
 ## Thanks
 
@@ -32,4 +33,3 @@ In no specific orders I used as inspirations
 -   https://github.com/WarsWorld/WarsWorld
 -   https://github.com/smogon/pokemon-showdown
 -   https://github.com/rpgtkoolmv/corescript
--
